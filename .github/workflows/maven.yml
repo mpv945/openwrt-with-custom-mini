@@ -42,7 +42,7 @@ jobs:
         distribution: 'graalvm' # 默认graalvm；可选 graalvm-community，mandrel，liberica
         components: 'native-image'
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        native-image-job-reports: 'true' # 支持 静态编译：https://github.com/graalvm/setup-graalvm/blob/778131f1d6837ccd4b2e91382c31830896a2d56e/.github/workflows/test.yml#L74-L92
+        native-image-musl: 'true' # 支持 静态编译：https://github.com/graalvm/setup-graalvm/blob/778131f1d6837ccd4b2e91382c31830896a2d56e/.github/workflows/test.yml#L74-L92
         cache: 'maven' # 默认'', 可选'maven', 'gradle', or 'sbt'
         # continue-on-error: native-image-musl: true # 生成完全静态 Linux binary，可在 Alpine / scratch 运行
     - name: Fix permissions
