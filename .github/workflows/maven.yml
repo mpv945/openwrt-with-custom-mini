@@ -57,6 +57,10 @@ jobs:
         chmod +x .mvn/wrapper/maven-wrapper.jar || true
         # ls -al /usr/bin/musl-gcc
         # sudo ln -s /usr/bin/musl-gcc /usr/local/bin/x86_64-linux-musl-gcc
+        echo "GRAALVM_HOME: $GRAALVM_HOME"
+        echo "JAVA_HOME: $JAVA_HOME"
+        java --version
+        uname -ar
     - name: Example step using Maven plugin  # https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
       env:
         CUSTOM_ENV: "test"
