@@ -86,7 +86,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install musl
-        run: sudo apt update && sudo apt install -y musl-tools build-essential zlib1g-dev
+        run: sudo apt update && sudo apt install -y musl-tools build-essential zlib1g-dev && sudo apt install gcc-aarch64-linux-gnu musl-dev
       - name: Install GraalVM ARM64
         run: |
           wget https://download.oracle.com/graalvm/25/latest/graalvm-jdk-25_linux-aarch64_bin.tar.gz
