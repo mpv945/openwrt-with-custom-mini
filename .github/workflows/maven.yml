@@ -63,13 +63,16 @@ jobs:
         uname -ar
         sudo apt update
         sudo apt install -y musl-tools
-        export CC=musl-gcc
-        export CXX=musl-g++
+        # export CC=musl-gcc
+        # export CXX=musl-g++
+        export CC=/usr/bin/musl-gcc
+        export CXX=/usr/bin/musl-g++
         uname -m
         musl-gcc -v
         which musl-gcc
         which x86_64-linux-musl-gcc
         file $(which musl-gcc)
+        native-image --version
     - name: Example step using Maven plugin  # https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
       env:
         CUSTOM_ENV: "test"
