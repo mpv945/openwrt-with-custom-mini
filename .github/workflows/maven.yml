@@ -44,7 +44,7 @@ jobs:
         components: 'native-image'
         github-token: ${{ secrets.GITHUB_TOKEN }}
         # 生成完全静态 Linux binary，可在 Alpine / scratch 运行
-        # native-image-musl: 'true' # 支持 静态编译：https://github.com/graalvm/setup-graalvm/blob/778131f1d6837ccd4b2e91382c31830896a2d56e/.github/workflows/test.yml#L74-L92
+        native-image-musl: 'true' # 支持 静态编译：https://github.com/graalvm/setup-graalvm/blob/778131f1d6837ccd4b2e91382c31830896a2d56e/.github/workflows/test.yml#L74-L92
         # native-image-job-reports: 'false'
         # set-java-home: 'true'
         cache: 'maven' # 默认'', 可选'maven', 'gradle', or 'sbt'
@@ -62,7 +62,6 @@ jobs:
         # ./mvnw package -Dnative
         ./mvnw clean package \
           -Dnative \
-          -Dquarkus.native.container-build=true \
           -Dquarkus.native.additional-build-args="--static,--libc=musl,-H:+StripDebugInfo,-H:Optimize=2"
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     #- name: Update dependency graph
