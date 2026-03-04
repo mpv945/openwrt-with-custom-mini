@@ -20,12 +20,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-x64:
 
     # win-arm 和 Linux-arm :https://github.com/actions/partner-runner-images [windows-11-arm 和 ubuntu-24.04-arm]
     # macos和x64:https://github.com/actions/runner-images
-    #runs-on: ubuntu-latest
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
+    #runs-on: ubuntu-24.04-arm
 
     steps:
     - uses: actions/checkout@v4
@@ -46,7 +46,7 @@ jobs:
         # components: 'native-image'
         github-token: ${{ secrets.GITHUB_TOKEN }}
         # 生成完全静态 Linux binary，可在 Alpine / scratch 运行 （native-image --static --libc=musl -H:+PrintAnalysisCallTree -H:+ReportExceptionStackTraces Hello）
-        # native-image-musl: 'true' # 支持 静态编译：https://github.com/graalvm/setup-graalvm/blob/778131f1d6837ccd4b2e91382c31830896a2d56e/.github/workflows/test.yml#L74-L92
+        native-image-musl: 'true' # 支持 静态编译：https://github.com/graalvm/setup-graalvm/blob/778131f1d6837ccd4b2e91382c31830896a2d56e/.github/workflows/test.yml#L74-L92
         # native-image-job-reports: 'false'
         # set-java-home: 'true'
         cache: 'maven' # 默认'', 可选'maven', 'gradle', or 'sbt'
@@ -60,18 +60,18 @@ jobs:
         echo "GRAALVM_HOME: $GRAALVM_HOME"
         echo "JAVA_HOME: $JAVA_HOME"
         java --version
-        uname -ar
-        sudo apt update
-        sudo apt install -y musl-tools
+        # uname -ar
+        # sudo apt update
+        # sudo apt install -y musl-tools
         # export CC=musl-gcc
         # export CXX=musl-g++
-        export CC=/usr/bin/musl-gcc
-        export CXX=/usr/bin/musl-g++
-        uname -m
-        musl-gcc -v
-        which musl-gcc
+        # export CC=/usr/bin/musl-gcc
+        # export CXX=/usr/bin/musl-g++
+        # uname -m
+        # musl-gcc -v
+        # which musl-gcc
         # which x86_64-linux-musl-gcc
-        file $(which musl-gcc)
+        # file $(which musl-gcc)
         native-image --version --verbose
     - name: Example step using Maven plugin  # https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
       env:
@@ -81,6 +81,29 @@ jobs:
         ./mvnw clean package \
           -Dnative \
           -Dquarkus.native.additional-build-args="--static,--libc=musl,-H:+StripDebugInfo,-H:Optimize=2"
+  build-arm:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install musl
+        run: sudo apt update && sudo apt install -y musl-tools build-essential zlib1g-dev
+      - name: Install GraalVM ARM64
+        run: |
+          wget https://download.oracle.com/graalvm/25/latest/graalvm-jdk-25_linux-aarch64_bin.tar.gz
+          # wget https://download.oracle.com/graalvm/<version>/latest/graalvm-jdk-<version>_linux-<architecture>_bin.tar.gz
+          tar -xzf graalvm-jdk-25_linux-aarch64_bin.tar.gz
+          sudo mv graalvm-jdk-25.* /opt/graalvm
+          echo "GRAALVM_HOME=/opt/graalvm" >> $GITHUB_ENV
+          echo "JAVA_HOME=/opt/graalvm" >> $GITHUB_ENV
+          echo "/opt/graalvm/bin" >> $GITHUB_PATH
+          # /opt/graalvm/bin/gu install native-image
+      - name: Fix permissions
+        run: |
+          chmod +x mvnw
+          chmod +x .mvn/wrapper/maven-wrapper.jar || true
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          java --version
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     #- name: Update dependency graph
     #  uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
