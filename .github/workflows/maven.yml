@@ -61,8 +61,8 @@ jobs:
         echo "JAVA_HOME: $JAVA_HOME"
         java --version
         uname -ar
-        # sudo apt update
-        # sudo apt install -y musl-tools
+        sudo apt update
+        sudo apt install -y musl-tools
         export CC=musl-gcc
         export CXX=musl-g++
         musl-gcc -v
