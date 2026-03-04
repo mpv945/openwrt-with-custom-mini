@@ -22,8 +22,10 @@ on:
 jobs:
   build:
 
-    # win-arm :https://github.com/actions/partner-runner-images [windows-11-arm]
-    runs-on: ubuntu-latest
+    # win-arm 和 Linux-arm :https://github.com/actions/partner-runner-images [windows-11-arm 和 ubuntu-24.04-arm]
+    # macos和x64:https://github.com/actions/runner-images
+    #runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     steps:
     - uses: actions/checkout@v4
@@ -36,12 +38,12 @@ jobs:
 #    - name: Build with Maven
 #      run: mvn -B package --file pom.xml
     - name: Setup GraalVM
-      uses: graalvm/setup-graalvm@v1
+      uses: graalvm/setup-graalvm@v1 # https://github.com/graalvm/setup-graalvm?tab=readme-ov-file
       with:
         java-version: '25'
         # version: '25.0.2' # Old 'version' option for the GraalVM version # 查看：https://github.com/graalvm/graalvm-ce-builds/releases
         distribution: 'graalvm' # 默认graalvm；可选 graalvm-community，mandrel，liberica
-        components: 'native-image'
+        # components: 'native-image'
         github-token: ${{ secrets.GITHUB_TOKEN }}
         # 生成完全静态 Linux binary，可在 Alpine / scratch 运行
         native-image-musl: 'true' # 支持 静态编译：https://github.com/graalvm/setup-graalvm/blob/778131f1d6837ccd4b2e91382c31830896a2d56e/.github/workflows/test.yml#L74-L92
