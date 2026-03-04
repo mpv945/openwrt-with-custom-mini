@@ -35,7 +35,8 @@ jobs:
 #    - name: Build with Maven
 #      run: mvn -B package --file pom.xml
     - name: Setup GraalVM
-      uses: graalvm/setup-graalvm@v1
+      #uses: graalvm/setup-graalvm@v1
+      uses: ./
       with:
         java-version: '25'
         version: '25.0.2' # Old 'version' option for the GraalVM version # 查看：https://github.com/graalvm/graalvm-ce-builds/releases
