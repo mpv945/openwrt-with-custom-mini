@@ -45,7 +45,7 @@ jobs:
         distribution: 'graalvm' # 默认graalvm；可选 graalvm-community，mandrel，liberica
         # components: 'native-image'
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        # 生成完全静态 Linux binary，可在 Alpine / scratch 运行
+        # 生成完全静态 Linux binary，可在 Alpine / scratch 运行 （native-image --static --libc=musl -H:+PrintAnalysisCallTree -H:+ReportExceptionStackTraces Hello）
         native-image-musl: 'true' # 支持 静态编译：https://github.com/graalvm/setup-graalvm/blob/778131f1d6837ccd4b2e91382c31830896a2d56e/.github/workflows/test.yml#L74-L92
         # native-image-job-reports: 'false'
         # set-java-home: 'true'
@@ -65,7 +65,11 @@ jobs:
         sudo apt install -y musl-tools
         export CC=musl-gcc
         export CXX=musl-g++
+        uname -m
         musl-gcc -v
+        which musl-gcc
+        which x86_64-linux-musl-gcc
+        file $(which musl-gcc)
     - name: Example step using Maven plugin  # https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
       env:
         CUSTOM_ENV: "test"
