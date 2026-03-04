@@ -105,6 +105,7 @@ jobs:
           echo "JAVA_HOME: $JAVA_HOME"
           java --version
           native-image --version --verbose
+          sudo ln -s /usr/bin/aarch64-linux-musl-gcc /usr/bin/x86_64-linux-musl-gcc
       - name: Example step using Maven plugin  # https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
         env:
           CUSTOM_ENV: "test"
