@@ -53,6 +53,7 @@ jobs:
       run: |
         chmod +x mvnw
         chmod +x .mvn/wrapper/maven-wrapper.jar || true
+        sudo ln -s /usr/bin/musl-gcc /usr/local/bin/x86_64-linux-musl-gcc
     - name: Example step using Maven plugin  # https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
       env:
         CUSTOM_ENV: "test"
