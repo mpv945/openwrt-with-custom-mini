@@ -72,7 +72,7 @@ jobs:
         which musl-gcc
         # which x86_64-linux-musl-gcc
         file $(which musl-gcc)
-        native-image --version
+        native-image --version --verbose
     - name: Example step using Maven plugin  # https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
       env:
         CUSTOM_ENV: "test"
