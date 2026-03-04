@@ -64,6 +64,7 @@ jobs:
         sudo apt update
         sudo apt install -y musl-tools
         export CC=musl-gcc
+        musl-gcc -v
     - name: Example step using Maven plugin  # https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
       env:
         CUSTOM_ENV: "test"
