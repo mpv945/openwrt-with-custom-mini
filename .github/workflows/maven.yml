@@ -12,8 +12,8 @@ defaults:
     shell: bash
 
 on:
-  #push:
-  #  branches: [ "main1" ]
+  push:
+    branches: [ "main" ]
   #pull_request:
   #  branches: [ "main1" ]
   # 开启手动触发 ： https://icpc.cloud/2024/01/23/GitHub-Actions-%E6%89%8B%E5%8A%A8%E8%A7%A6%E5%8F%91%E6%96%B9%E5%BC%8F/
