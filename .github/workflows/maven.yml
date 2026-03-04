@@ -61,6 +61,9 @@ jobs:
         echo "JAVA_HOME: $JAVA_HOME"
         java --version
         uname -ar
+        sudo apt update
+        sudo apt install -y musl-tools
+        export CC=musl-gcc
     - name: Example step using Maven plugin  # https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
       env:
         CUSTOM_ENV: "test"
