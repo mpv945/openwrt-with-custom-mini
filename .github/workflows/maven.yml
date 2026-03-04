@@ -109,9 +109,10 @@ jobs:
           # docker方式：https://www.graalvm.org/latest/getting-started/container-images/ 查看【Oracle Container Registry (OCR)】 和 https://github.com/graalvm/
           # docker pull --platform linux/aarch64 container-registry.oracle.com/graalvm/native-image:25
           # docker pull container-registry.oracle.com/graalvm/native-image:25-muslib
-          docker pull --platform linux/aarch64 container-registry.oracle.com/graalvm/native-image:25-muslib
+          # docker pull --platform linux/aarch64 container-registry.oracle.com/graalvm/native-image:25-muslib
+          docker pull --platform linux/aarch64 ghcr.io/graalvm/native-image-community:25-muslib
           #  docker run -it --rm --entrypoint /bin/bash container-registry.oracle.com/graalvm/native-image:25
-          docker run --rm native-image:25-muslib bash -c "uname -a && lscpu && free -h && native-image --version"
+          docker run --rm native-image-community:25-muslib bash -c "uname -a && lscpu && free -h && native-image --version"
       - name: Example step using Maven plugin  # https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
         env:
           CUSTOM_ENV: "test"
