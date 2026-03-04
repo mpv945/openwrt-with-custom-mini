@@ -1,18 +1,28 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+name: Java CI with Maven native
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+# 限制 同一时间只允许一个 workflow 运行。
+# 【push #1 → workflow A (运行中)然后push #2 → workflow B (触发)，workflow A ❌ 被取消，workflow B ✅ 接管执行】
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
-name: Java CI with Maven
+defaults:
+  run:
+    # necessary for windows
+    shell: bash
 
 on:
   push:
     branches: [ "main1" ]
   pull_request:
     branches: [ "main1" ]
+  # 支持手动触发
+  workflow_dispatch:
+    inputs:
+      retry:
+        description: "Retry count"
+        type: number
+        default: 3
 
 jobs:
   build:
@@ -21,15 +31,34 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
+#    - name: Set up JDK 17
+#      uses: actions/setup-java@v4
+#      with:
+#        java-version: '17'
+#        distribution: 'temurin'
+#        cache: maven
+#    - name: Build with Maven
+#      run: mvn -B package --file pom.xml
+    - name: Setup GraalVM
+      uses: graalvm/setup-graalvm@v1
       with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-
+        java-version: '25'
+        version: '25.0.2' # Old 'version' option for the GraalVM version # 查看：https://github.com/graalvm/graalvm-ce-builds/releases
+        distribution: 'graalvm' # 默认graalvm；可选 graalvm-community，mandrel，liberica
+        components: 'native-image'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        native-image-job-reports: 'true'
+        cache: 'maven' # 默认'', 可选'maven', 'gradle', or 'sbt'
+        # continue-on-error: native-image-musl: true # 生成完全静态 Linux binary，可在 Alpine / scratch 运行
+    - name: Fix permissions
+      run: |
+        chmod +x mvnw
+        chmod +x .mvn/wrapper/maven-wrapper.jar || true
+    - name: Example step using Maven plugin  # https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
+      env:
+        CUSTOM_ENV: "test"
+      run: |
+        ./mvnw package -Dnative
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
-    - name: Update dependency graph
-      uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+    #- name: Update dependency graph
+    #  uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
