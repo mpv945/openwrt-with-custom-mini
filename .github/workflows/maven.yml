@@ -12,10 +12,10 @@ defaults:
     shell: bash
 
 on:
-  push:
-    branches: [ "main1" ]
-  pull_request:
-    branches: [ "main1" ]
+  #push:
+  #  branches: [ "main1" ]
+  #pull_request:
+  #  branches: [ "main1" ]
   # 支持手动触发
   workflow_dispatch:
     inputs:
