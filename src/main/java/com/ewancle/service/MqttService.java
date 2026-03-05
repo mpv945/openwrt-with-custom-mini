@@ -12,13 +12,14 @@ import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Message;
 
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
 public class MqttService {
 
-    @Incoming("temperature")
+    /*@Incoming("temperature")
     public void consume(Temperature temp) {
         System.out.println("收到温度数据: device="
                 + temp.deviceId + ", value=" + temp.value);
@@ -31,25 +32,49 @@ public class MqttService {
         System.out.println("Payload: " + msg.getPayload());
         System.out.println("QoS: " + msg.getQosLevel());
         System.out.println("Retain: " + msg.isRetain());
-    }
+    }*/
 
+    /**
+     * 带ack确认的消费组
+     * @param message
+     * @return
+     */
     @Incoming("temperature")
-    public CompletionStage<Void> consume(Message<String> msg) {
-
+    public CompletionStage<Void> consume(Message<String> message) {
         return CompletableFuture
-                .runAsync(() -> saveToDatabase(msg.getPayload()))
-                .thenCompose(v -> msg.ack())
+                .runAsync(() -> saveToDatabase(message))
+                .thenCompose(v -> message.ack())
                 .exceptionally(ex -> {
-                    msg.nack(ex);
+                    message.nack(ex);
                     return null;
                 });
     }
-
-    private void saveToDatabase(String payload) {
-        CompletableFuture.runAsync(() -> {});
+    private void saveToDatabase(Message<String> message) {
+        CompletableFuture.runAsync(() -> {
+            System.out.println("Payload 接收到消息内容: " + message.getPayload());
+            //System.out.println("QoS: " + message.getQosLevel());
+            //System.out.println("Retain: " + message.isRetain());
+        });
     }
 
     @Inject
+    @Channel("alert")
+    MutinyEmitter<MqttMessage<String>> emitterAsync;
+    public Uni<Void> send(MqttMessage<String> message) {
+
+        return emitterAsync.send(message)
+                .onItem().invoke(
+                        () -> System.out.println("发送成功，MQTT ACK 已收到")
+                //发送失败自动重试（最多3次，每次间隔1秒）
+                ).onFailure().retry().withBackOff(Duration.ofSeconds(1)).atMost(3)
+                .onFailure().invoke(
+                        ex -> System.err.println("发送失败: " + ex.getMessage())
+                );
+    }
+
+
+
+    /*@Inject
     @Channel("alert")
     Emitter<Temperature> emitter;
     public void sendAlert(String deviceId, double value) {
@@ -59,9 +84,9 @@ public class MqttService {
         emitter.send(t);
     }
 
-    /**
+    *//**
      * 异步发送
-     */
+     *//*
     @Inject
     @Channel("alert")
     MutinyEmitter<Temperature> emitterAsync;
@@ -96,10 +121,10 @@ public class MqttService {
                         retain
                 );
         emitterPlus1.send(msg);
-    }
+    }*/
 
-    @Channel("alert")
-    Emitter<Message<String>> emitterPlus2;
+    //@Channel("alert")
+    //Emitter<Message<String>> emitterPlus2;
     public void sendSafe(String msg) {
     //public CompletionStage<Void> sendSafe(String msg) {
         MqttMessage<String> message =
@@ -121,14 +146,14 @@ public class MqttService {
                     return null;
                 });*/
 
-        CompletionStage<Void> stage = emitterPlus2.send(message);
+        /*CompletionStage<Void> stage = emitterPlus2.send(message);
         stage.whenComplete((res, ex) -> {
             if (ex != null) {
                 //log.error("MQTT发送失败", ex);
             } else {
                 //log.info("MQTT发送成功");
             }
-        });
+        });*/
 
         // 同步等待（阻塞）：.toCompletableFuture().join()和.toCompletableFuture().get() 【生产慎用】
         /*emitter.send(message)
