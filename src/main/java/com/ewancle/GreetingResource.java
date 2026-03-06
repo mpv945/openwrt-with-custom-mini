@@ -1,9 +1,13 @@
 package com.ewancle;
 
 import com.ewancle.config.RedisConfig;
+import com.ewancle.dto.Extension;
 import com.ewancle.service.MqttService;
+import com.ewancle.service.OpenwrtRestClientService;
 import com.ewancle.service.RedisService;
 import com.ewancle.service.RestClientService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.codec.mqtt.MqttQoS;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
@@ -19,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Set;
 
 @Path("/hello")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -37,10 +42,24 @@ public class GreetingResource {
     /*@RestClient
     RestClientService restClientService;*/
 
+    @RestClient
+    OpenwrtRestClientService openwrtRestClientService;
+
+    @Inject
+    ObjectMapper objectMapper;
+
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String hello() {
         redisService.publish(redisConfig.publishChannelName(),"测试redis消息发布");
+
+        Set<Extension> restClientExtensions = openwrtRestClientService.getExtensionsById("io.quarkus:quarkus-hibernate-validator");
+        try {
+            String json = objectMapper.writeValueAsString(restClientExtensions);
+            System.out.println("http请求结果="+json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         return "Hello from Quarkus REST";
     }
 
@@ -70,6 +89,8 @@ public class GreetingResource {
                                 .entity("发送失败: " + ex.getMessage())
                                 .build()
                 );
+
+
     }
 
 

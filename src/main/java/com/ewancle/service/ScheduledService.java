@@ -1,14 +1,18 @@
 package com.ewancle.service;
 
 import io.quarkus.scheduler.Scheduled;
+import io.quarkus.scheduler.ScheduledExecution;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
 public class ScheduledService {
+
+    private final AtomicInteger counter = new AtomicInteger();
 
     /*@Scheduled(
             every = "10s",
@@ -44,12 +48,14 @@ public class ScheduledService {
             //| 每周一凌晨2点 | `0 0 2 ? * MON` |
             //| 每月1号    | `0 0 0 1 * ?`   |
             cron = "0 0/5 * * * ?", // 每5分钟
+            // @Scheduled(cron = "{cron.expr}") 配置文件：cron.expr=*/5 * * * * ?
             delay = 30, // 延迟执行
             delayUnit= TimeUnit.SECONDS,
             concurrentExecution = Scheduled.ConcurrentExecution.SKIP
     )
-    public Uni<Void> run() {
-
+    public Uni<Void> run(ScheduledExecution execution) {
+        counter.incrementAndGet();
+        System.out.println(execution.getScheduledFireTime());
         return Uni.createFrom().voidItem()
                 .invoke(() -> System.out.println("开始执行任务"))
                 .call(this::doBusinessLogic)
