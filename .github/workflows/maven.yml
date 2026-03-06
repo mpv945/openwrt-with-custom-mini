@@ -11,7 +11,10 @@ defaults:
     # necessary for windows
     shell: bash
 
-on: {} # 完全不触发
+on:
+  push:
+    branches:
+      - "do-not-trigger-this-branch" # 完全不触发
 #on:
 #  push:
 #    branches: [ "main" ]
