@@ -67,7 +67,7 @@ jobs:
           distribution: 'graalvm' # 默认graalvm；可选 graalvm-community，mandrel，liberica
           github-token: ${{ secrets.GITHUB_TOKEN }}
           #components: 'espresso,llvm-toolchain,native-image,nodejs,python,R,ruby,wasm'
-          components: 'native-image'
+          #components: 'native-image'
           #components: ${{ matrix.target.build_native == true && 'native-image' || '' }}
           native-image-musl: 'true'
           # native-image-musl: ${{ contains(matrix.target.build_opt, '--libc=musl') || contains(matrix.target.build_opt, '--static') }}
