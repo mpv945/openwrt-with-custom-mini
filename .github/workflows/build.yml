@@ -17,6 +17,12 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  pre:
+    name: Job preparation 【before】
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
   build:
     permissions:
       contents: read
@@ -29,9 +35,9 @@ jobs:
       matrix:
         target:
           # 来自： https://github.com/actions/runner-images
-          - { os: ubuntu-latest, app_name: "linux-x64", "build_native":true, "build_opt": "--static,--libc=musl,-H:EnableURLProtocols=http\\,https" }
+          - { os: ubuntu-latest, app_name: "linux-x64", "build_native":true, "build_opt": "--static,--libc=musl,-march=x86-64-v3,-H:EnableURLProtocols=http\\,https" }
           # 来自： https://github.com/actions/partner-runner-images
-          #- { os: ubuntu-24.04-arm, app_name: "linux-arm", "build_native":false, "build_opt": "-H:+UnlockExperimentalVMOptions,--verbos, -H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
+          - { os: ubuntu-24.04-arm, app_name: "linux-arm", "build_native":false, "build_opt": "--static,--libc=musl,-march=armv8-a,-H:EnableURLProtocols=http\\,https" }
           # 来自： https://github.com/actions/runner-images
           #- { os: macos-latest, app_name: "macos-arm", "build_native":false, "build_opt": "-H:+UnlockExperimentalVMOptions,--verbos, -H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
           # 来自： https://github.com/actions/runner-images
@@ -52,8 +58,6 @@ jobs:
           else
             echo "MUSL=false" >> $GITHUB_ENV
           fi
-      - name: Checkout source code ${{ matrix.target.os }}
-        uses: actions/checkout@v4
       - name: Install Environmental ${{ matrix.target.os }}
         # https://github.com/graalvm/setup-graalvm?tab=readme-ov-file
         uses: graalvm/setup-graalvm@v1
@@ -86,8 +90,15 @@ jobs:
           -Dquarkus.native.additional-build-args-append=--verbose \
           -Dquarkus.package.output-name=${PROJECT_NAME}-${app_name} \
           -Dquarkus.native.additional-build-args="$build_opt"
+          # build-args参数可以配置文件配置：https://cn.quarkus.io/guides/all-config 其中23开始支持指定平台：-march=x86-64-v4/v3/v2  旧cpu可以指定compatibility AArch64架构=armv8-a  全部类型可以指定list，这样体积会很大
       - name: Upload artifact ${{ matrix.target.os }}
         uses: actions/upload-artifact@v4
         with:
           name: artifact-${{ github.event.repository.name }}-${{ matrix.target.os }}
           path: target/${{ github.event.repository.name }}*
+  post:
+    name: Job Destroy 【after】
+    runs-on: ubuntu-latest
+    steps:
+      - name: Destroy opt
+        run: echo "job结束"
