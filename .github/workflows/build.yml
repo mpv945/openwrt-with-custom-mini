@@ -29,7 +29,7 @@ jobs:
       matrix:
         target:
           # 来自： https://github.com/actions/runner-images
-          - { os: ubuntu-latest, app_name: "linux-x64", "build_native":true, "build_opt": "--verbose -H:+UnlockExperimentalVMOptions --static --libc=musl -H:+StripDebugInfo -H:Optimize=2 -H:-AddAllCharsets --enable-url-protocols='http,https'" }
+          - { os: ubuntu-latest, app_name: "linux-x64", "build_native":true, "build_opt": "--verbose -H:+UnlockExperimentalVMOptions --static --libc=musl -H:+StripDebugInfo -H:Optimize=2 -H:-AddAllCharsets --enable-url-protocols=http\\,https" }
           # 来自： https://github.com/actions/partner-runner-images
           #- { os: ubuntu-24.04-arm, app_name: "linux-arm", "build_native":false, "build_opt": "-H:+UnlockExperimentalVMOptions,--verbos, -H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
           # 来自： https://github.com/actions/runner-images
