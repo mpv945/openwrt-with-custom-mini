@@ -29,17 +29,17 @@ jobs:
       matrix:
         target:
           # 来自： https://github.com/actions/runner-images
-          - { os: ubuntu-latest, app_name: "linux-x64", "build_native":true, "build_opt": "--static,--libc=musl,-H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
+          - { os: ubuntu-latest, app_name: "linux-x64", "build_native":true, "build_opt": "--static,--libc=musl, -H:+UnlockExperimentalVMOptions, -H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
           # 来自： https://github.com/actions/partner-runner-images
-          #- { os: ubuntu-24.04-arm, app_name: "linux-arm", "build_native":false, "build_opt": "-H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
+          #- { os: ubuntu-24.04-arm, app_name: "linux-arm", "build_native":false, "build_opt": "-H:+UnlockExperimentalVMOptions, -H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
           # 来自： https://github.com/actions/runner-images
-          #- { os: macos-latest, app_name: "macos-arm", "build_native":false, "build_opt": "-H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
+          #- { os: macos-latest, app_name: "macos-arm", "build_native":false, "build_opt": "-H:+UnlockExperimentalVMOptions, -H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
           # 来自： https://github.com/actions/runner-images
-          #- { os: macos-latest-large, app_name: "macos-x64", "build_native":false, "build_opt": "-H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
+          #- { os: macos-latest-large, app_name: "macos-x64", "build_native":false, "build_opt": "-H:+UnlockExperimentalVMOptions, -H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
           # 来自：https://github.com/actions/runner-images
-          #- { os: windows-latest, app_name: "win-x64", "build_native":false, "build_opt": "-H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
+          #- { os: windows-latest, app_name: "win-x64", "build_native":false, "build_opt": "-H:+UnlockExperimentalVMOptions, -H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
           # 来自： https://github.com/actions/partner-runner-images
-          #- { os: windows-11-arm, app_name: "win-arm", "build_native":false, "build_opt": "-H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
+          #- { os: windows-11-arm, app_name: "win-arm", "build_native":false, "build_opt": "-H:+UnlockExperimentalVMOptions, -H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
     env:
       app_name: ${{ matrix.target.app_name }}
       build_opt: ${{ matrix.target.build_opt }}
@@ -65,11 +65,13 @@ jobs:
           #components: 'espresso,llvm-toolchain,native-image,nodejs,python,R,ruby,wasm'
           #components: 'native-image'
           #components: ${{ matrix.target.build_native == true && 'native-image' || '' }}
-          native-image-musl: ${{ contains(matrix.target.build_opt, '--libc=musl') }}
+          #native-image-musl: ${{ contains(matrix.target.build_opt, '--libc=musl') }}
           # native-image-musl: ${{ contains(matrix.target.build_opt, '--libc=musl') || contains(matrix.target.build_opt, '--static') }}
           cache: 'maven' # 默认'', 可选'maven', 'gradle', or 'sbt'
       - name: Environmental Validation ${{ matrix.target.os }}
         run: |
+          sudo apt update
+          sudo apt install -y musl-tools
           echo "GRAALVM_HOME: $GRAALVM_HOME"
           echo "JAVA_HOME: $JAVA_HOME"
           java --version
@@ -84,8 +86,8 @@ jobs:
           -Dquarkus.package.output-name=${PROJECT_NAME}-${app_name} \
           -Dquarkus.native.additional-build-args="${build_opt}" \
           package
-      - name: Upload artifact $PROJECT_NAME ${{ matrix.target.os }}
+      - name: Upload artifact ${{ matrix.target.os }}
         uses: actions/upload-artifact@v4
         with:
-          name: artifact-${PROJECT_NAME}-${{ matrix.target.os }}
-          path: target/${PROJECT_NAME}*
+          name: artifact-${{ github.event.repository.name }}-${{ matrix.target.os }}
+          path: target/${{ github.event.repository.name }}*
