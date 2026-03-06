@@ -1,19 +1,50 @@
 name: Deploy
 
+permissions:
+  contents: write
+  discussions: write
+
 on:
   workflow_run:
     workflows: ["openwrt-cross-platform-build"]
-    types:
+    types: # types 用来指定 workflow_run 事件的类型，目前官方支持 ： completed 当 workflow 完成执行时触发（无论成功、失败、取消）； requested 当 workflow 被请求启动时触发（一般很少用）
       - completed
 jobs:
   deploy:
-    #if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    if: |
-      (github.event_name == 'push' && contains(github.event.head_commit.message, 'deploy prod')) ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'deploy prod')) ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && startsWith(github.ref, 'refs/tags/'))
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # workflow_run.conclusion 可能的值：
+    # | 值           | 含义                       |
+    #| ----------- | ------------------------ |
+    #| `success`   | workflow 成功完成            |
+    #| `failure`   | workflow 执行失败            |
+    #| `cancelled` | workflow 被取消             |
+    #| `skipped`   | workflow 被跳过             |
+    #| `neutral`   | workflow 中性状态（未被视为成功或失败） |
+    #if: |
+    #  (github.event_name == 'push' && contains(github.event.head_commit.message, 'deploy prod')) ||
+    #  (github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'deploy prod')) ||
+    #  (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && startsWith(github.ref, 'refs/tags/'))
     runs-on: ubuntu-latest
-
     steps:
-      - name: deploy
-        run: echo "deploy project"
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Generate Changelog
+        run: echo "# Good things have arrived" > ${{ github.workspace }}-CHANGELOG.txt
+      # 3. 下载所有 Artifacts
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifact
+          pattern: artifact-${{ github.event.repository.name }}-*
+          merge-multiple: true
+      - name: List Downloaded Files
+        run: ls -lRh ./artifact
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body_path: ${{ github.workspace }}-CHANGELOG.txt
+          preserve_order: true # 指示上传资产时是否应保留文件顺序
+          files: |
+            ./artifact/*
