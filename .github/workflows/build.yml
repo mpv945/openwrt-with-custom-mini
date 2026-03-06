@@ -58,6 +58,9 @@ jobs:
           else
             echo "MUSL=false" >> $GITHUB_ENV
           fi
+      # 每个job任务都要check代码，不然找不到文件和目录
+      - name: Checkout source code ${{ matrix.target.os }}
+        uses: actions/checkout@v4
       - name: Install Environmental ${{ matrix.target.os }}
         # https://github.com/graalvm/setup-graalvm?tab=readme-ov-file
         uses: graalvm/setup-graalvm@v1
