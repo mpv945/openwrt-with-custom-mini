@@ -29,7 +29,7 @@ jobs:
       matrix:
         target:
           # 来自： https://github.com/actions/runner-images
-          - { os: ubuntu-latest, app_name: "linux-x64", "build_native":true, "build_opt": "--verbose -H:+UnlockExperimentalVMOptions --static --libc=musl -H:+StripDebugInfo -H:Optimize=2 -H:-AddAllCharsets --enable-url-protocols=http\\,https" }
+          - { os: ubuntu-latest, app_name: "linux-x64", "build_native":true, "build_opt": "--verbose --static --libc=musl -H:+StripDebugInfo -H:Optimize=2 -H:-AddAllCharsets --enable-url-protocols=http\\,https" }
           # 来自： https://github.com/actions/partner-runner-images
           #- { os: ubuntu-24.04-arm, app_name: "linux-arm", "build_native":false, "build_opt": "-H:+UnlockExperimentalVMOptions,--verbos, -H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
           # 来自： https://github.com/actions/runner-images
@@ -63,15 +63,15 @@ jobs:
           distribution: 'graalvm' # 默认graalvm；可选 graalvm-community，mandrel，liberica
           github-token: ${{ secrets.GITHUB_TOKEN }}
           #components: 'espresso,llvm-toolchain,native-image,nodejs,python,R,ruby,wasm'
-          #components: 'native-image'
+          components: 'native-image'
           #components: ${{ matrix.target.build_native == true && 'native-image' || '' }}
           native-image-musl: 'true'
           # native-image-musl: ${{ contains(matrix.target.build_opt, '--libc=musl') || contains(matrix.target.build_opt, '--static') }}
           cache: 'maven' # 默认'', 可选'maven', 'gradle', or 'sbt'
       - name: Environmental Validation ${{ matrix.target.os }}
         run: |
-          sudo apt update
-          sudo apt install -y musl-tools
+          # sudo apt update
+          # sudo apt install -y musl-tools
           echo "GRAALVM_HOME: $GRAALVM_HOME"
           echo "JAVA_HOME: $JAVA_HOME"
           java --version
