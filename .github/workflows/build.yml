@@ -85,7 +85,7 @@ jobs:
           -Dmaven.test.skip=true \
           -Dquarkus.native.additional-build-args-append=--verbose \
           -Dquarkus.package.output-name=${PROJECT_NAME}-${app_name} \
-          -Dquarkus.native.additional-build-args="--static,--libc=musl,-H:EnableURLProtocols=http,https"
+          -Dquarkus.native.additional-build-args="--static","--libc=musl","-H:EnableURLProtocols=http,https"
       - name: Upload artifact ${{ matrix.target.os }}
         uses: actions/upload-artifact@v4
         with:
