@@ -84,7 +84,7 @@ jobs:
           -Dquarkus.package.output-name=${PROJECT_NAME}-${app_name} \
           -Dquarkus.native.additional-build-args="${build_opt}" \
           package
-      - name: Upload artifact ${{ PROJECT_NAME }} ${{ matrix.target.os }}
+      - name: Upload artifact $PROJECT_NAME ${{ matrix.target.os }}
         uses: actions/upload-artifact@v4
         with:
           name: artifact-${PROJECT_NAME}-${{ matrix.target.os }}
