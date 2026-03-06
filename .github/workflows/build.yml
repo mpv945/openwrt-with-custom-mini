@@ -80,12 +80,11 @@ jobs:
           echo "获取 项目 名称 : ${{ github.event.repository.name }}"
       - name: Compile the code ${{ matrix.target.os }}
         run: |
-          mvn -X clean \
+          mvn -X clean package \
           -Dnative \
           -Dmaven.test.skip=true \
           -Dquarkus.package.output-name=${PROJECT_NAME}-${app_name} \
-          -Dquarkus.native.additional-build-args="${build_opt}" \
-          package
+          -Dquarkus.native.additional-build-args="${build_opt}"
       - name: Upload artifact ${{ matrix.target.os }}
         uses: actions/upload-artifact@v4
         with:
