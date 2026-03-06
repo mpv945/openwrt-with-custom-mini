@@ -1,0 +1,91 @@
+name: openwrt-cross-platform-build
+on:
+  push:
+    branches: [ main ]
+  # 支持手动触发
+  workflow_dispatch:
+env:
+  CARGO_TERM_COLOR: always
+  PROJECT_NAME: ${{ github.event.repository.name }}
+defaults:
+  run:
+    # necessary for windows
+    shell: bash
+# 限制 同一时间只允许一个 workflow 运行。
+# 【push #1 → workflow A (运行中)然后push #2 → workflow B (触发)，workflow A ❌ 被取消，workflow B ✅ 接管执行】
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    permissions:
+      contents: read
+      packages: write
+    name: Build on ${{ matrix.target.os }}
+    runs-on: ${{ matrix.target.os }}
+    strategy:
+      fail-fast: false # 默认行为（true），false表示失可以正常执行下一个，linux ❌，macos ✅ 继续，windows ✅ 继续
+      max-parallel: 2 # 限制 Matrix 最大并行数
+      matrix:
+        target:
+          # 来自： https://github.com/actions/runner-images
+          - { os: ubuntu-latest, app_name: "linux-x64", "build_native":true, "build_opt": "--static,--libc=musl,-H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
+          # 来自： https://github.com/actions/partner-runner-images
+          #- { os: ubuntu-24.04-arm, app_name: "linux-arm", "build_native":false, "build_opt": "-H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
+          # 来自： https://github.com/actions/runner-images
+          #- { os: macos-latest, app_name: "macos-arm", "build_native":false, "build_opt": "-H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
+          # 来自： https://github.com/actions/runner-images
+          #- { os: macos-latest-large, app_name: "macos-x64", "build_native":false, "build_opt": "-H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
+          # 来自：https://github.com/actions/runner-images
+          #- { os: windows-latest, app_name: "win-x64", "build_native":false, "build_opt": "-H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
+          # 来自： https://github.com/actions/partner-runner-images
+          #- { os: windows-11-arm, app_name: "win-arm", "build_native":false, "build_opt": "-H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
+    env:
+      app_name: ${{ matrix.target.app_name }}
+      build_opt: ${{ matrix.target.build_opt }}
+    steps:
+      # 自定义环境变量：native-image-musl: ${{ env.MUSL }}
+      - name: Set custom flag ${{ matrix.target.os }}
+        run: |
+          if [[ "${{ matrix.target.build_opt }}" == *"--libc=musl"* ]]; then
+            echo "MUSL=true" >> $GITHUB_ENV
+          else
+            echo "MUSL=false" >> $GITHUB_ENV
+          fi
+      - name: Checkout source code ${{ matrix.target.os }}
+        uses: actions/checkout@v4
+      - name: Install Environmental ${{ matrix.target.os }}
+        # https://github.com/graalvm/setup-graalvm?tab=readme-ov-file
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '25'
+          # version: '25.0.2' # Old 'version' option for the GraalVM version # 查看：https://github.com/graalvm/graalvm-ce-builds/releases
+          distribution: 'graalvm' # 默认graalvm；可选 graalvm-community，mandrel，liberica
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          #components: 'espresso,llvm-toolchain,native-image,nodejs,python,R,ruby,wasm'
+          #components: 'native-image'
+          #components: ${{ matrix.target.build_native == true && 'native-image' || '' }}
+          native-image-musl: ${{ contains(matrix.target.build_opt, '--libc=musl') }}
+          # native-image-musl: ${{ contains(matrix.target.build_opt, '--libc=musl') || contains(matrix.target.build_opt, '--static') }}
+          cache: 'maven' # 默认'', 可选'maven', 'gradle', or 'sbt'
+      - name: Environmental Validation ${{ matrix.target.os }}
+        run: |
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          java --version
+          echo "获取 workflow 名称 : $GITHUB_WORKFLOW ${{ github.workflow }}"
+          echo "获取 job 名称 : $GITHUB_JOB  ${{ github.job }}"
+          echo "获取 项目 名称 : ${{ github.event.repository.name }}"
+      - name: Compile the code ${{ matrix.target.os }}
+        run: |
+          mvn clean \
+          -Dnative \
+          -Dmaven.test.skip=true \
+          -Dquarkus.package.output-name=${PROJECT_NAME}-${app_name} \
+          -Dquarkus.native.additional-build-args="${build_opt}" \
+          package
+      - name: Upload artifact ${{ PROJECT_NAME }} ${{ matrix.target.os }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-${PROJECT_NAME}-${{ matrix.target.os }}
+          path: target/${PROJECT_NAME}*

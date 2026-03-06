@@ -11,17 +11,24 @@ defaults:
     # necessary for windows
     shell: bash
 
-on:
-  push:
-    branches: [ "main" ]
-  #pull_request:
-  #  branches: [ "main1" ]
-  # 开启手动触发 ： https://icpc.cloud/2024/01/23/GitHub-Actions-%E6%89%8B%E5%8A%A8%E8%A7%A6%E5%8F%91%E6%96%B9%E5%BC%8F/
-  workflow_dispatch:
+on: {} # 完全不触发
+#on:
+#  push:
+#    branches: [ "main" ]
+#  #pull_request:
+#  #  branches: [ "main1" ]
+#  # 开启手动触发 ： https://icpc.cloud/2024/01/23/GitHub-Actions-%E6%89%8B%E5%8A%A8%E8%A7%A6%E5%8F%91%E6%96%B9%E5%BC%8F/
+#  workflow_dispatch:
+#  # 跨文件依赖： build.yml 配置 jobs: build:，等build执行完成
+#  workflow_run:
+#    workflows: [ "Build" ]
+#    types:
+#      - completed
 
 jobs:
   build-x64:
-
+    # 多个yml文件关联，需要前一个workflow_run允许成功
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     # win-arm 和 Linux-arm :https://github.com/actions/partner-runner-images [windows-11-arm 和 ubuntu-24.04-arm]
     # macos和x64:https://github.com/actions/runner-images
     runs-on: ubuntu-latest
