@@ -29,11 +29,11 @@ jobs:
       - uses: actions/download-artifact@v5
         with:
           run-id: ${{ github.event.workflow_run.id }}
-          name: build-env
-          path: ./artifact-ids
+          name: artifact-merged-ids-${{ github.event.repository.name }}
+          path: /tmp
       - name: Load variables
         run: |
-          source ./artifact-ids/artifact-merged-ids.txt
+          source /tmp/artifact-merged-ids.txt
           echo "前一个运行文件的环境变量=$UPLOAD_ARTIFACT_IDS"
       - name: Checkout
         uses: actions/checkout@v6
