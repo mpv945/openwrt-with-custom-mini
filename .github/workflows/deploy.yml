@@ -49,13 +49,15 @@ jobs:
       - name: Download All Artifacts
         uses: actions/download-artifact@v5
         with:
-          # Default is ${{ github.run_id }}
-          run-id: ${{ github.event.workflow_run.id }}
           path: ./artifact
-          pattern: artifact-${{ github.event.repository.name }}-*
+          #pattern: artifact-${{ github.event.repository.name }}-*
           #artifact-ids: 12345,67890
-          artifact-ids: ${{ steps.ver.outputs.version }}
+          artifact-ids: ${{ steps.ver.outputs.ids }}
           merge-multiple: true
+          # 从其他工作流运行甚至其他存储库下载工件可能很有用。默认情况下，权限范围有限，只能下载当前工作流运行中的工件。
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # 默认 ${{ github.run_id }} 当前工作流运行id，跨工作流需要指定运行id
+          run-id: ${{ github.event.workflow_run.id }}
       - name: List Downloaded Files
         run: ls -lRh ./artifact
       - name: Release
