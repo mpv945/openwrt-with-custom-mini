@@ -113,20 +113,37 @@ jobs:
 
       - name: Output artifact ID
         run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
+      - name: Append upload-artifact-id
+        run: |
+          echo "${{ steps.artifact-upload-step.outputs.artifact-id }}" >> /tmp/upload-artifact-id-${{ github.event.repository.name }}-${{ steps.artifact-upload-step.outputs.artifact-id }}.txt
+      - name: Upload artifact-id ${{ matrix.target.os }}
+        id: artifact-id-upload-step
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-id-${{ github.event.repository.name }}-${{ steps.artifact-upload-step.outputs.artifact-id }}
+          path: /tmp/upload-artifact-id-${{ github.event.repository.name }}-${{ steps.artifact-upload-step.outputs.artifact-id }}.txt
   post:
     needs: [build]
     name: Job Destroy 【after】
     runs-on: ubuntu-latest
     steps:
       # 3. 下载所有 Artifacts
-      - name: Download All Artifacts
-        uses: actions/download-artifact@v5
+#      - name: Download All Artifacts
+#        uses: actions/download-artifact@v5
+#        with:
+#          # run-id: ${{ github.event.workflow_run.id }}
+#          path: ./artifact
+#          pattern: artifact-${{ github.event.repository.name }}-*
+#          merge-multiple: true
+#      - name: List Downloaded Files
+#        run: ls -lRh ./artifact
+      - uses: actions/download-artifact@v4
+        name: Download All artifact-id Files
         with:
-          # run-id: ${{ github.event.workflow_run.id }}
-          path: ./artifact
-          pattern: artifact-${{ github.event.repository.name }}-*
+          path: ./artifact-ids
+          pattern: artifact-id-${{ github.event.repository.name }}-*
           merge-multiple: true
-      - name: List Downloaded Files
-        run: ls -lRh ./artifact
+      - name: List Downloaded ids Files
+        run: ls -lRh ./artifact-ids
       - name: Destroy opt
         run: echo "job结束： ${{ github.event.workflow_run.id }}"

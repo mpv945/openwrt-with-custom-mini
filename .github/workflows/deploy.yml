@@ -34,9 +34,11 @@ jobs:
       - name: Download All Artifacts
         uses: actions/download-artifact@v5
         with:
-          #run-id: ${{ github.event.workflow_run.id }}
+          # Default is ${{ github.run_id }}
+          run-id: ${{ github.event.workflow_run.id }}
           path: ./artifact
           pattern: artifact-${{ github.event.repository.name }}-*
+          #artifact-ids: 12345,67890
           merge-multiple: true
       - name: List Downloaded Files
         run: ls -lRh ./artifact
