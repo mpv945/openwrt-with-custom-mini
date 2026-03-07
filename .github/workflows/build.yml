@@ -89,18 +89,27 @@ jobs:
           echo "获取 项目 名称 : ${{ github.event.repository.name }}"
       - name: Compile the code ${{ matrix.target.os }}
         run: |
+          # 控制jar包输出文件名
+          # -Dquarkus.package.output-name=${PROJECT_NAME}-${app_name} \
           mvn -X clean package \
+          -Dproject.build.finalName=${PROJECT_NAME}-${app_name}  \
+          -Dquarkus.package.output-name=${PROJECT_NAME}-${app_name} \
           -Dnative \
           -Dmaven.test.skip=true \
           -Dquarkus.native.additional-build-args-append=--verbose \
-          -Dquarkus.package.output-name=${PROJECT_NAME}-${app_name} \
           -Dquarkus.native.additional-build-args="$build_opt"
           # build-args参数可以配置文件配置：https://cn.quarkus.io/guides/all-config 其中23开始支持指定平台：-march=x86-64-v4/v3/v2  旧cpu可以指定compatibility AArch64架构=armv8-a  全部类型可以指定list，这样体积会很大
       - name: Upload artifact ${{ matrix.target.os }}
         uses: actions/upload-artifact@v4
         with:
           name: artifact-${{ github.event.repository.name }}-${{ matrix.target.os }}
-          path: target/${{ github.event.repository.name }}*
+          #path: target/artifact-${{ github.event.repository.name }}*
+          path: |
+            target/${{ github.event.repository.name }}-${{ matrix.target.app_name }}
+            target/${{ github.event.repository.name }}-${{ matrix.target.app_name }}.jar
+
+      - name: Output artifact ID
+        run: echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
   post:
     needs: [build]
     name: Job Destroy 【after】
@@ -110,7 +119,7 @@ jobs:
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
-          run-id: ${{ github.event.workflow_run.id }}
+          # run-id: ${{ github.event.workflow_run.id }}
           path: ./artifact
           pattern: artifact-${{ github.event.repository.name }}-*
           merge-multiple: true
