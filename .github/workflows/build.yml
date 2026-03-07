@@ -106,5 +106,15 @@ jobs:
     name: Job Destroy 【after】
     runs-on: ubuntu-latest
     steps:
+      # 3. 下载所有 Artifacts
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          path: ./artifact
+          pattern: artifact-${{ github.event.repository.name }}-*
+          merge-multiple: true
+      - name: List Downloaded Files
+        run: ls -lRh ./artifact
       - name: Destroy opt
         run: echo "job结束： ${{ github.event.workflow_run.id }}"
