@@ -91,14 +91,16 @@ jobs:
         run: |
           # 控制jar包输出文件名
           # -Dquarkus.package.output-name=${PROJECT_NAME}-${app_name} \
+          # -Dproject.build.finalName=${PROJECT_NAME}-${app_name}  \
           mvn -X clean package \
-          -Dproject.build.finalName=${PROJECT_NAME}-${app_name}  \
           -Dquarkus.package.output-name=${PROJECT_NAME}-${app_name} \
           -Dnative \
           -Dmaven.test.skip=true \
           -Dquarkus.native.additional-build-args-append=--verbose \
           -Dquarkus.native.additional-build-args="$build_opt"
           # build-args参数可以配置文件配置：https://cn.quarkus.io/guides/all-config 其中23开始支持指定平台：-march=x86-64-v4/v3/v2  旧cpu可以指定compatibility AArch64架构=armv8-a  全部类型可以指定list，这样体积会很大
+      - name: View build Files ${{ matrix.target.os }}
+        run: ls -lRh ./target
       - name: Upload artifact ${{ matrix.target.os }}
         uses: actions/upload-artifact@v4
         with:
