@@ -107,4 +107,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Destroy opt
-        run: echo "job结束"
+        run: echo "job结束： ${{ github.event.workflow_run.id }}"
