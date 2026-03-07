@@ -32,9 +32,9 @@ jobs:
         run: echo "# Good things have arrived" > ${{ github.workspace }}-CHANGELOG.txt
       # 3. 下载所有 Artifacts
       - name: Download All Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
-          run-id: ${{ github.event.workflow_run.id }}
+          #run-id: ${{ github.event.workflow_run.id }}
           path: ./artifact
           pattern: artifact-${{ github.event.repository.name }}-*
           merge-multiple: true

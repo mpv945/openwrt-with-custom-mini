@@ -102,6 +102,7 @@ jobs:
       - name: View build Files ${{ matrix.target.os }}
         run: ls -lRh ./target
       - name: Upload artifact ${{ matrix.target.os }}
+        id: artifact-upload-step
         uses: actions/upload-artifact@v4
         with:
           name: artifact-${{ github.event.repository.name }}-${{ matrix.target.os }}
@@ -119,7 +120,7 @@ jobs:
     steps:
       # 3. 下载所有 Artifacts
       - name: Download All Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           # run-id: ${{ github.event.workflow_run.id }}
           path: ./artifact
