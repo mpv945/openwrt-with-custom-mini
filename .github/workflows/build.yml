@@ -145,5 +145,16 @@ jobs:
           merge-multiple: true
       - name: List Downloaded ids Files
         run: ls -lRh ./artifact-ids
+      - name: Merge values
+        run: |
+          VALUES=$(cat ./artifact-ids/* | paste -sd "," -)
+          echo "Merged 值: $VALUES"
+          echo "UPLOAD_ARTIFACT_IDS=$VALUES" >> /tmp/artifact-merged-ids.txt
+      - name: Upload artifact Merged ids ${{ matrix.target.os }}
+        id: artifact-merged-ids-upload-step
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-merged-ids-${{ github.event.repository.name }}
+          path: /tmp/artifact-merged-ids.txt
       - name: Destroy opt
         run: echo "job结束： ${{ github.event.workflow_run.id }}"
