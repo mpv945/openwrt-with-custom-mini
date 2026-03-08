@@ -53,6 +53,7 @@
 * **移除旧版配置项**：`old_config` 被替换为 `new_config`。如未更新配置文件，可能导致应用启动失败。
 * **API 调整**：删除了 `v1/old-endpoint` 接口，新增了 `v2/new-endpoint` 接口。请根据新的 API 文档进行适配。
 * **数据库字段变化**：更改了数据库表结构，升级时请执行数据库迁移脚本。
+* **【not support muslib on ARM64】依赖问题已在 upstream 修复: oracle/graal#13087
 
 ---
 
@@ -121,9 +122,8 @@ project-linux-amd64.tar.gz: OK
 
 感谢以下贡献者在本版本中的帮助：
 
-* @alice
-* @bob
-* @charlie
+* @mpv945
+* [Open Source Project](https://github.com/quarkusio/quarkus) 3.32.1
 
 如果你也希望参与贡献，请访问 [我们的贡献指南](CONTRIBUTING.md)。
 
