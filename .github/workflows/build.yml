@@ -152,6 +152,10 @@ jobs:
         run: ls -lRh ./artifact-ids
       - name: Merge values
         run: |
+          echo "ref=${{ github.ref }}"
+          echo "ref_name=${{ github.ref_name }}"
+          echo "ref_type=${{ github.ref_type }}"
+          
           VALUES=$(cat ./artifact-ids/* | paste -sd "," -)
           echo "Merged 值: $VALUES"
           echo "UPLOAD_ARTIFACT_IDS=$VALUES" >> /tmp/artifact-merged-ids.txt

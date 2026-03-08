@@ -1,0 +1,66 @@
+# 🚀 Release vX.X.X
+
+> Release date: YYYY-MM-DD
+> Stability: Stable / Beta / RC
+
+Welcome to the **vX.X.X** release.
+This version introduces new features, performance improvements, and several bug fixes to enhance stability and usability.
+
+---
+
+# ✨ Highlights
+
+Key updates in this release:
+
+- 🚀 **New Feature:** Brief description of the main feature
+- ⚡ **Performance:** Summary of performance improvements
+- 🔧 **Enhancement:** Important improvements to existing functionality
+- 🛠 **Bug Fix:** Critical issues resolved
+
+---
+
+# 🆕 New Features
+
+| Feature | Description |
+|------|-------------|
+| Feature Name | Description of the new capability |
+| Feature Name | What it does and why it matters |
+
+---
+
+# ⚡ Improvements
+
+- Improved performance of XXX module
+- Optimized memory usage
+- Better logging and error handling
+- Enhanced configuration flexibility
+
+---
+
+# 🐛 Bug Fixes
+
+- Fixed issue where `XXX` could cause crashes
+- Resolved incorrect behavior in `YYY`
+- Fixed compatibility issue with `ZZZ`
+
+---
+
+# 🔄 Changes
+
+- Updated dependencies
+- Refactored internal architecture
+- Improved API stability
+
+---
+
+# ⚠️ Breaking Changes
+
+> If none, write **None**
+
+- Removed deprecated API `xxx`
+- Configuration format updated
+
+Migration example:
+
+```bash
+old_config=true
