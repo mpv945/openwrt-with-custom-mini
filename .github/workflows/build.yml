@@ -112,7 +112,25 @@ jobs:
           #path: |
           #  target/${{ github.event.repository.name }}-${{ matrix.target.app_name }}
           #  target/${{ github.event.repository.name }}-${{ matrix.target.app_name }}.jar
+      - name: 获取时间和时区
+        shell: bash
+        if: runner.os != 'Windows'
+        run: |
+          echo "TIME_NOW=$(date '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+          echo "TIMEZONE=$(date +'%Z %z')" >> $GITHUB_ENV
+      - name: Windows 获取时间和时区
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: |
+          $time = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+          $tz   = [System.TimeZoneInfo]::Local.Id
+          Write-Host "TIME_NOW=$time" >> $env:GITHUB_ENV
+          Write-Host "TIMEZONE=$tz" >> $env:GITHUB_ENV
 
+      - name: 打印时间和时区
+        run: |
+          echo "当前时间: $TIME_NOW"
+          echo "时区: $TIMEZONE"
       - name: Output artifact ID
         run: |
           echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'

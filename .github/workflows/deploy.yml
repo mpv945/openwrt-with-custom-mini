@@ -45,16 +45,20 @@ jobs:
           echo "ids=$UPLOAD_ARTIFACT_IDS" >> $GITHUB_OUTPUT
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "START_TIME=$(date -u '+%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-          export START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+          #export START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+          #export START_TIME=$(date '%Y-%m-%d %H:%M:%S %Z %z')
+          #export TIMEZONE=$(date +'%Z %z')
+          export TZ=$(timedatectl show -p Timezone --value)
+          export START_TIME="$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S %Z %z') Asia/Shanghai"
           if [[ "$TAG_NAME" == *"-beta" ]]; then
-            echo "ICON=Beta 🏁" >> $GITHUB_ENV
-            export ICON="Beta 🏁"
+            echo "ICON=$TAG_NAME 测试版 🏁" >> $GITHUB_ENV
+            export ICON="$TAG_NAME 测试版 🏁"
           elif [[ "$TAG_NAME" == *"-rc" ]]; then
-            echo "ICON=RC 🏳️‍🌈" >> $GITHUB_ENV
-            export ICON="RC 🏳️‍🌈"
+            echo "ICON=$TAG_NAME 候选版 🏳️‍🌈" >> $GITHUB_ENV
+            export ICON="$TAG_NAME 候选版 🏳️‍🌈"
           else
-            echo "ICON=Stable 🚩" >> $GITHUB_ENV
-            export ICON="Stable 🚩"
+            echo "ICON=$TAG_NAME 正式版 🚩" >> $GITHUB_ENV
+            export ICON="$TAG_NAME 正式版 🚩"
           fi
           envsubst < release-catalog-zh.template > ${{ github.event.repository.name }}-release-catalog.txt
       # 3. 下载所有 Artifacts
