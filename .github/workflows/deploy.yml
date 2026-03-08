@@ -70,9 +70,12 @@ jobs:
         #if: github.ref_type == 'tag' || startsWith(github.ref, 'refs/tags/')
         #if: startsWith(github.ref, 'refs/tags/')
         if: steps.ver.outputs.tag_name
+        #if: steps.ver.outputs.ids != ''
         with:
           # name: 发布版本名称。默认为标签名称。
+          name: ${{ steps.ver.outputs.tag_name }}
           # tag_name: 标签名称。默认为github.ref_name
+          tag_name: ${{ steps.ver.outputs.tag_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
           body_path: ${{ github.workspace }}-CHANGELOG.txt
           # 此版本中的重要变更说明文本，和body_path同时存在，优先body
