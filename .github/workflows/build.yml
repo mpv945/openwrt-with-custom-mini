@@ -38,9 +38,9 @@ jobs:
       matrix:
         target:
           # 来自： https://github.com/actions/runner-images
-          - { os: ubuntu-latest, app_name: "linux-x64", "build_native":true, "build_opt": "--static,--libc=musl,-H:EnableURLProtocols=http\\,https" }
+          - { os: ubuntu-latest, app_name: "linux-x64", "build_native":true, "build_opt": "--static,--libc=musl,-H:+AddAllCharsets,-H:EnableURLProtocols=http\\,https" }
           # 来自： https://github.com/actions/partner-runner-images
-          - { os: ubuntu-24.04-arm, app_name: "linux-arm", "build_native":false, "build_opt": "-H:EnableURLProtocols=http\\,https" }
+          - { os: ubuntu-24.04-arm, app_name: "linux-arm", "build_native":false, "build_opt": "-H:+AddAllCharsets,-H:EnableURLProtocols=http\\,https" }
           # 来自： https://github.com/actions/runner-images
           #- { os: macos-latest, app_name: "macos-arm", "build_native":false, "build_opt": "-H:+UnlockExperimentalVMOptions,--verbos, -H:+StripDebugInfo,-H:Optimize=2,-H:-AddAllCharsets,--enable-url-protocols=http,https" }
           # 来自： https://github.com/actions/runner-images
@@ -91,6 +91,7 @@ jobs:
           echo "获取 项目 名称 : ${{ github.event.repository.name }}"
       - name: Compile the code ${{ matrix.target.os }}
         run: |
+          # 配置增加：quarkus.native.add-all-charsets=true 等于Different from GraalVM option : -H:+AddAllCharsets 【https://quarkus.io/guides/building-native-image#quarkus-native-pkg-native-config_quarkus-native-add-all-charsets】
           # 控制jar包输出文件名
           # -Dquarkus.package.output-name=${PROJECT_NAME}-${app_name} \
           # -Dproject.build.finalName=${PROJECT_NAME}-${app_name}  \
@@ -98,6 +99,7 @@ jobs:
           -Dquarkus.package.output-name=${PROJECT_NAME}-${app_name} \
           -Dnative \
           -Dmaven.test.skip=true \
+          -Dquarkus.native.add-all-charsets=true \
           -Dquarkus.native.additional-build-args-append=--verbose \
           -Dquarkus.native.additional-build-args="$build_opt"
           # build-args参数可以配置文件配置：https://cn.quarkus.io/guides/all-config 其中23开始支持指定平台：-march=x86-64-v4/v3/v2  旧cpu可以指定compatibility AArch64架构=armv8-a  全部类型可以指定list，这样体积会很大

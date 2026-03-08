@@ -1,5 +1,26 @@
 https://getemoji.com/  Emoji 大全
 
+✅ 路由器无法使用sftp上传，只能下载
+
+export http_proxy=http://192.168.8.226:7890
+export https_proxy=http://192.168.8.226:7890
+# wget --proxy=on --no-check-certificate https://github.com/mpv945/openwrt-with-custom-mini/releases/download/v1.0.10/openwrt-with-custom-mini-linux-x64-runner -O openwrt-with-custom-mini-linux-x64-runner
+curl -L -x http://192.168.8.226:7890 -o openwrt-with-custom-mini-linux-arm-runner https://github.com/mpv945/openwrt-with-custom-mini/releases/download/v1.0.10/openwrt-with-custom-mini-linux-arm-runner
+ll -ah
+配置环境变量
+vim /etc/profile
+在文件末尾添加：
+export REDIS_PWD=ezzBTBzKUwGp0VkKFsdbV6DHwZrMuiGu
+export REDIS_URL=redis://redis-19019.c283.us-east-1-4.ec2.cloud.redislabs.com:19019
+export MQTT_HOST=154.21.85.97
+export MQTT_PORT=1883
+export MQTT_NAME=device001
+export MQTT_PWD=asdf1@34
+在编辑了环境变量配置文件后，你可以通过以下命令使它们立即生效：source /etc/profile
+
+chmod +x openwrt-with-custom-mini-linux-arm-runner
+
+
 ✅ 最常用的发布流程
 git add .
 git commit -m "release"
