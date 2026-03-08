@@ -1,0 +1,46 @@
+✅ 最常用的发布流程
+git add .
+git commit -m "release"
+
+git tag -a v1.0.0 -m "release v1.0.0"
+git push origin main 或者 git -c http.proxy=http://127.0.0.1:7890 push
+git push origin v1.0.0
+
+一、创建 tag
+1️⃣ 创建普通 tag（lightweight） 这种 tag 只是一个指向 commit 的标记。
+git tag v1.0.0
+2️⃣ 创建带说明的 tag（推荐）: -a = annotated tag（带作者、时间、说明）; -m = tag 描述
+git tag -a v1.0.0 -m "release version 1.0.0"
+
+二、查看 tag
+git tag
+查看某个 tag：git show v1.0.0
+
+三、推送 tag 到远程
+推送单个 tag: git push origin v1.0.0
+推送所有 tag: git push origin --tags
+
+四、给指定 commit 打 tag
+如果不是当前 commit：如果不是当前 commit：  例如：git tag -a v1.0.0 3a8f2bc -m "release"
+
+五、删除 tag
+删除本地 tag: git tag -d v1.0.0
+删除远程 tag: git push origin :refs/tags/v1.0.0  或者：git push origin --delete tag v1.0.0
+
+六、GitHub Actions 自动触发
+很多 CI（例如 GitHub Actions）会监听 tag：
+on:
+  push:
+    tags:
+      - 'v*'
+当你执行：
+git tag v1.0.0
+git push origin v1.0.0
+
+七、自动打版本 tag（常见 CI 用法）
+VERSION=1.2.3
+git tag -a v$VERSION -m "release $VERSION"
+git push origin v$VERSION
+
+八、查看远程 tag
+git ls-remote --tags origin
