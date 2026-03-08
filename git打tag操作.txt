@@ -3,8 +3,8 @@ git add .
 git commit -m "release"
 
 git tag -a v1.0.0 -m "release v1.0.0"
-git push origin main 或者 git -c http.proxy=http://127.0.0.1:7890 push
-git push origin v1.0.0
+git push origin main 或者 git -c http.proxy=http://127.0.0.1:7890 push rigin main
+git push origin v1.0.0 或者 git -c http.proxy=http://127.0.0.1:7890 push origin v1.0.0
 
 一、创建 tag
 1️⃣ 创建普通 tag（lightweight） 这种 tag 只是一个指向 commit 的标记。
