@@ -115,6 +115,7 @@ project-linux-amd64.tar.gz: OK
 * **用户指南**：详细介绍如何使用本项目，包括安装、配置和使用说明。
 * **API 文档**：包含所有暴露的 API 端点及其用法。
 * **配置说明**：描述所有可配置项及其默认值。
+* **[Open Source Project](https://github.com/quarkusio/quarkus) 3.32.1
 
 ---
 
@@ -123,7 +124,7 @@ project-linux-amd64.tar.gz: OK
 感谢以下贡献者在本版本中的帮助：
 
 * @mpv945
-* [Open Source Project](https://github.com/quarkusio/quarkus) 3.32.1
+* @wirthi
 
 如果你也希望参与贡献，请访问 [我们的贡献指南](CONTRIBUTING.md)。
 
