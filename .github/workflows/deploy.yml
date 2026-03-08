@@ -1,4 +1,4 @@
-name: Deploy
+﻿name: Deploy
 
 permissions:
   contents: write
@@ -43,8 +43,6 @@ jobs:
           echo "ids=$UPLOAD_ARTIFACT_IDS" >> $GITHUB_OUTPUT
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Generate Changelog
-        run: echo "# Good things have arrived" > ${{ github.workspace }}-CHANGELOG.txt
       # 3. 下载所有 Artifacts
       - name: Download All Artifacts
         uses: actions/download-artifact@v5
@@ -60,12 +58,34 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
       - name: List Downloaded Files
         run: ls -lRh ./artifact
+      - name: Generate Changelog
+        run: echo "# 加载文本的路径，该文本说明了此版本中的重大变更" > ${{ github.workspace }}-CHANGELOG.txt
       - name: Release
         uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
         with:
+          # name: 发布版本名称。默认为标签名称。
+          # tag_name: 标签名称。默认为github.ref_name
           token: ${{ secrets.GITHUB_TOKEN }}
           body_path: ${{ github.workspace }}-CHANGELOG.txt
-          preserve_order: true # 指示上传资产时是否应保留文件顺序
+          # 此版本中的重要变更说明文本，和body_path同时存在，优先body
+          # body: "重要变更说明文本"
+          # 指示此版本是否为草稿的指标
+          draft: false
+          # 指示是否为预发布版本的指标
+          prerelease: false
+          # 指示上传资源时是否应保留文件顺序
+          preserve_order: true
+          # 以换行符分隔的待发布资源路径字符串
           files: |
             ./artifact/*
+          # 指示如果任何通配符files不匹配则是否失败
+          #fail_on_unmatched_files: false
+          # 如果指定，则会创建指定类别的讨论并将其链接到该版本。该值必须是存储库中已存在的类别。
+          #discussion_category_name: 创建类别:https://docs.github.com/en/discussions/managing-discussions-for-your-community/managing-categories-for-discussions
+          # 是否自动生成此版本的名称和正文。如果指定了名称，则使用指定的名称；否则，将自动生成名称。如果指定了正文，则正文内容将添加到自动生成的说明之前。https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
+          #generate_release_notes: true
+          # 追加到现有正文中，而不是覆盖它。
+          #append_body: true
+          # 指定是否应将此版本设置为仓库的最新版本。草稿和预发布版本不能设置为最新版本。可设值：true, false, or legacy
+          # make_latest: true
