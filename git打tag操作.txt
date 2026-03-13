@@ -6,6 +6,8 @@ export http_proxy=http://192.168.8.226:7890
 export https_proxy=http://192.168.8.226:7890
 # wget --proxy=on --no-check-certificate https://github.com/mpv945/openwrt-with-custom-mini/releases/download/v1.0.10/openwrt-with-custom-mini-linux-x64-runner -O openwrt-with-custom-mini-linux-x64-runner
 curl -L -x http://192.168.8.226:7890 -o openwrt-with-custom-mini-linux-arm-runner https://github.com/mpv945/openwrt-with-custom-mini/releases/download/v1.0.10/openwrt-with-custom-mini-linux-arm-runner
+curl -L -x http://192.168.8.226:7890 -o openwrt-with-custom-mini-linux-arm-runner https://github.com/mpv945/openwrt-with-custom-mini/releases/downl
+oad/v1.0.11/openwrt-with-custom-mini-linux-arm-runner
 ll -ah
 配置环境变量
 vim /etc/profile
